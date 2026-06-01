@@ -219,12 +219,8 @@ Todos os filtros são implementados como **máscaras circulares** aplicadas dire
 
 ### Qual filtro produziu o melhor resultado?
 
-Para a imagem da Lena, o **filtro passa-baixa** produziu o resultado visualmente mais equilibrado e interpretável. Embora cause suavização, a imagem reconstruída ainda é reconhecível e mantém as estruturas principais do rosto e do chapéu. Isso ocorre porque a maior parte da informação visual de uma imagem fotográfica real está concentrada nas baixas frequências — basta uma pequena faixa central do espectro para reconstruir uma versão compreensível da imagem.
+Para a imagem da Lena, o **filtro passa-baixa** produziu o resultado visualmente mais equilibrado e interpretável. Embora cause suavização, a imagem reconstruída ainda é reconhecível e mantém as estruturas principais do rosto e do chapéu.
 
-O **filtro passa-alta**, apesar de matematicamente correto, produz um resultado de difícil interpretação para leigos, pois a imagem fica quase completamente escura. O **passa-banda** e o **rejeita-banda** têm resultados intermediários e são mais úteis em contextos específicos de análise de frequências do que para visualização geral.
+O **filtro passa-alta**, produz um resultado de difícil interpretação, pois a imagem fica quase completamente escura. O **passa-banda** e o **rejeita-banda** têm resultados intermediários e são mais úteis em contextos específicos de análise de frequências do que para visualização geral.
 
 ---
-
-## Licença
-
-Este projeto foi desenvolvido para fins acadêmicos.
