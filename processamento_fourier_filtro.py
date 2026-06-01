@@ -1,30 +1,15 @@
-"""
-Análise e Processamento de Imagens com Transformada de Fourier
-Filtros no Domínio da Frequência: Passa-baixa, Passa-alta, Passa-banda, Rejeita-banda
-
-Dependências: pip install opencv-python numpy matplotlib
-"""
-
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 import os
 
 def load_image(path: str) -> np.ndarray:
-    """Carrega a imagem em escala de cinza."""
     img = cv2.imread(path, cv2.IMREAD_GRAYSCALE)
     if img is None:
         raise FileNotFoundError(f"Imagem não encontrada: {path}")
     return img
 
 def compute_dft(img: np.ndarray):
-    """
-    Calcula a DFT 2D da imagem e retorna o espectro centralizado.
-
-    Retorna:
-        dft_shift : espectro complexo centralizado
-        magnitude : espectro de magnitude em escala logarítmica (para exibição)
-    """
     img_float = np.float32(img)
     dft = np.fft.fft2(img_float)
     dft_shift = np.fft.fftshift(dft)
@@ -33,7 +18,6 @@ def compute_dft(img: np.ndarray):
 
 
 def idft(dft_shift: np.ndarray) -> np.ndarray:
-    """Aplica a DFT inversa e retorna a imagem reconstruída (uint8)."""
     f_ishift = np.fft.ifftshift(dft_shift)
     img_back = np.fft.ifft2(f_ishift)
     img_back = np.abs(img_back)
@@ -41,14 +25,6 @@ def idft(dft_shift: np.ndarray) -> np.ndarray:
     return img_back
 
 def make_circular_mask(shape: tuple, radius: float, inside: bool = True) -> np.ndarray:
-    """
-    Cria uma máscara circular no domínio da frequência.
-
-    Args:
-        shape  : (linhas, colunas) da imagem
-        radius : raio de corte em pixels
-        inside : True  → 1 dentro do círculo | False → 1 fora do círculo
-    """
     rows, cols = shape
     cy, cx = rows // 2, cols // 2
     Y, X = np.ogrid[:rows, :cols]
@@ -58,32 +34,23 @@ def make_circular_mask(shape: tuple, radius: float, inside: bool = True) -> np.n
 
 
 def lowpass_filter(shape: tuple, cutoff: float) -> np.ndarray:
-    """Filtro Passa-baixa: mantém frequências baixas, suaviza a imagem."""
     return make_circular_mask(shape, cutoff, inside=True)
 
 
 def highpass_filter(shape: tuple, cutoff: float) -> np.ndarray:
-    """Filtro Passa-alta: remove frequências baixas, realça bordas."""
     return make_circular_mask(shape, cutoff, inside=False)
 
 
 def bandpass_filter(shape: tuple, low_cut: float, high_cut: float) -> np.ndarray:
-    """Filtro Passa-banda: mantém apenas frequências entre low_cut e high_cut."""
     inner = make_circular_mask(shape, low_cut,  inside=True)
     outer = make_circular_mask(shape, high_cut, inside=True)
     return (outer - inner).clip(0, 1)
 
 
 def bandreject_filter(shape: tuple, low_cut: float, high_cut: float) -> np.ndarray:
-    """Filtro Rejeita-banda: remove frequências entre low_cut e high_cut."""
     return 1 - bandpass_filter(shape, low_cut, high_cut)
 
 def apply_filter(dft_shift: np.ndarray, mask: np.ndarray):
-    """
-    Multiplica o espectro pela máscara e retorna:
-        - magnitude_map : espectro filtrado (log) para exibição
-        - img_result    : imagem reconstruída via DFT inversa
-    """
     dft_filtered = dft_shift * mask
     magnitude_map = 20 * np.log(np.abs(dft_filtered) + 1)
     img_result = idft(dft_filtered)
@@ -91,10 +58,6 @@ def apply_filter(dft_shift: np.ndarray, mask: np.ndarray):
 
 def plot_all_results(img_original, magnitude_original, filters: list,
                      save_path: str = "resultados/comparativo_completo.png"):
-    """
-    Gera figura completa com todos os resultados.
-    Cada filtro ocupa uma linha: máscara | espectro filtrado | imagem resultado.
-    """
     n = len(filters)
     fig, axes = plt.subplots(n + 1, 3, figsize=(15, 4 * (n + 1)),
                              facecolor="#0d0d0d")
@@ -134,7 +97,6 @@ def plot_all_results(img_original, magnitude_original, filters: list,
 
 
 def plot_filter_effect(img_original, filter_info: dict, save_path: str | None = None):
-    """Plota comparação lado a lado: original × resultado de um único filtro."""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), facecolor="#0d0d0d")
     fig.suptitle(f"Filtro: {filter_info['name']}", color="white", fontsize=13)
 
@@ -154,7 +116,6 @@ def plot_filter_effect(img_original, filter_info: dict, save_path: str | None = 
     plt.show()
 
 def plot_fourier_transform(img_original, magnitude, save_path: str | None = None):
-    """Exibe a imagem original ao lado do espectro de Fourier."""
     fig, axes = plt.subplots(1, 2, figsize=(10, 4), facecolor="#0d0d0d")
     fig.suptitle("Transformada de Fourier 2D", color="white", fontsize=13)
 
